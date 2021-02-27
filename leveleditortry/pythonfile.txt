@@ -1,0 +1,8 @@
+gul 5
+dogimanos 100
+vihan 3
+browni 4
+sontythetati missingscore
+gul 0
+chirag 7
+chirag1 0
