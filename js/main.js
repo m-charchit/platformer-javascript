@@ -1,10 +1,14 @@
 var key1
+var camerax
 var door
 var lava
 var game
 var ground
 var trial
 var villi
+var villidie = false
+var laser
+// create the player
 function Hero(game, x, y) {
     Phaser.Sprite.call(this, game, x, y, "hero") // here we call the sprite we will add it later
     this.anchor.set(0.5, 0.5)
@@ -16,11 +20,11 @@ Hero.prototype = Object.create(Phaser.Sprite.prototype)
 Hero.prototype.constructor = Hero // now we can access it any activity like jump and move by this
     // now this method comes in use 
 Hero.prototype.move = function(direction) {
-    const speed = 600 // now it will move with physics engine we will handle more things like cllision with physics
+    const speed = 300 // now it will move with physics engine we will handle more things like cllision with physics
     this.body.velocity.x = direction * speed
 }
 Hero.prototype.jump = function() {
-    var jumpspeed = 1500
+    var jumpspeed = 500
     jumpspeed+=100
     let canjump = this.body.touching.down
     if (canjump ) {
@@ -33,7 +37,7 @@ Hero.prototype.bounce = function() {
     bounce = 200
     this.body.velocity.y = -bounce
 }
-
+// create the spider
 function Spider(game, x, y) {
     Phaser.Sprite.call(this, game, x, y, "spider")
     this.anchor.set(0.5)
@@ -67,7 +71,7 @@ Spider.prototype.die = function() {
         this.kill()
     }, this)
 }
-
+// create the villian
 function Villian(game, x, y) {
 
     Phaser.Sprite.call(this, game, x, y, "villian") // here we call the sprite we will add it later
@@ -111,6 +115,8 @@ Villian.prototype.dies = function() {
 
 
 playstate = {} // we created a game state which objects will be override in future
+
+// preload function
 playstate.preload = function() {
     try {
     for (var i = 0;i<10;i++){
@@ -153,7 +159,7 @@ playstate.update = function() {
     if (this.haskey) {
         this.keyIcon.frame = 1
     } else { this.keyIcon.frame = 0 }
-    
+    camerax = this.game.camera.x
 }
 playstate._handlecollision = function() {
     this.game.physics.arcade.collide(this.hero, this.platforms)
@@ -161,7 +167,7 @@ playstate._handlecollision = function() {
     this.game.physics.arcade.collide(this.hero, ground)
     this.game.physics.arcade.overlap(this.hero, this.coins, this._herovscoin, null, this) // null here means no filter apply this or it will not work
     this.game.physics.arcade.collide(this.hero, lava, this._herovslava, null, this) // null here means no filter apply this or it will not work
-    this.game.physics.arcade.collide(this.hero, this.laser.bullets, this._herovslaser, null, this) // null here means no filter apply this or it will not work
+    this.game.physics.arcade.collide(this.hero, laser.bullets, this._herovslaser, null, this) // null here means no filter apply this or it will not work
     this.game.physics.arcade.collide(this.spiders, this.platforms)
     this.game.physics.arcade.collide(this.spiders, this.walls)
     this.game.physics.arcade.collide(this.villians, this.walls)
@@ -174,9 +180,11 @@ playstate._handlecollision = function() {
 
 }
 playstate._herovslaser = function(hero, bullet) {
-    hero.kill()
-    bullet.kill()
-    this.game.state.restart(true, false, { level: this.level })
+    if (villidie == false){
+        bullet.kill()
+        hero.kill()
+        this.game.state.restart(true, false, { level: this.level })
+    }
 
 }
 
@@ -184,6 +192,10 @@ playstate._herovslaser = function(hero, bullet) {
 playstate._herovsvillian = function(hero, villian) {
     if (hero.body.velocity.y > 10) {
         villian.dies()
+        villidie = true
+        laser.autofire = false
+        
+        
         
     } else {
         hero.kill()
@@ -217,6 +229,9 @@ playstate._herovscoin = function(hero, coin) {
     this.coinspickup++
         this.sfx.coin.play()
 }
+
+
+// handling Inputs
 playstate._handleinput = function() {
     if (this.keys.right.isDown) {
         this.hero.move(1.3) // 1 is right
@@ -226,7 +241,8 @@ playstate._handleinput = function() {
         this.hero.move(0) // this is so that the hero stops when no key pressed 
     }
 }
-const levelcount = 4 // increase it after the change in the number of levels
+
+const levelcount = 3 // increase it after the change in the number of levels
 playstate.init = function(data) { // HERE WE ADDED THE KEYS WITH INPUT.KEYBOARD.ADDKEYS
     this.game.renderer.renderSession.roundPixels = true // this is so that the image do not blur
     this.keys = this.game.input.keyboard.addKeys({
@@ -260,7 +276,7 @@ playstate.create = function() {
     this.game.world.setBounds(0, 0, 2000, 600)
     this.game.camera.follow(this.hero)
     background.fixedToCamera = true
-    
+    ground.fixedToCamera = true
 
 }
 var background
@@ -285,53 +301,44 @@ playstate._loadLevel = function(data) {
     data.coins.forEach(this._spawncoin, this)
     data.keys1.forEach(this._spawnkey, this)
 
-    var gravity = 8000
+    var gravity = 500
     gravity += 500
     this.game.physics.arcade.gravity.y = gravity // we are doing it here not in init so that if there are levels like moon can have their own gravity in json file
     this._spawncharacters({ hero: data.hero, spiders: data.spiders, villians: data.villians })
     this._spawndoor(data.door.x, data.door.y)
+    camerax = this.game.camera.x
     this._spawnground(0, 546)
     this._spawnlava(data.lava.x, data.lava.y)
-    this._spawnweapons()
+    
     this._spawnweapon()
 }
+
 playstate._spawnweapon = function() {
-    this.laser = game.add.weapon(2, "viweapon")
-    this.game.physics.enable(this.laser)
-    this.laser.bulletKillType = Phaser.Weapon.KILL_CAMERA_BOUNDS
-    this.laser.bulletSpeed = 1000
-    this.laser.fireRate = 2000
-    this.laser.fireAngle = Phaser.ANGLE_RIGHT
-    this.laser.autofire = true
-    this.antigravity = -8000
-    this.antigravity -= 500 
-    this.laser.bulletGravity.y= this.antigravity
-    this.laser.setBulletBodyOffset(28, 10, 6, 6)
-    this.laser.trackSprite(villi, 20, 10, true)
-    this.laser.multiFire = true
+    laser = game.add.weapon(2, "viweapon")
+    this.game.physics.enable(laser)
+    laser.bulletKillType = Phaser.Weapon.KILL_CAMERA_BOUNDS
+    laser.bulletSpeed = 300
+    laser.fireRate = 2000
+    laser.fireAngle = Phaser.ANGLE_RIGHT
     
+    laser.autofire = true
+    this.antigravity = -500
+    this.antigravity -= 500 
+    laser.bulletGravity.y= this.antigravity
+    laser.setBulletBodyOffset(28, 10, 6, 6)
+    laser.trackSprite(villi, 20, 10, true)
+    laser.multiFire = true
 }
-playstate._spawnweapons = function() {
-    this.laser = game.add.weapon(4, "viweapon")
-    this.game.physics.enable(this.laser)
-    this.laser.bulletKillType = Phaser.Weapon.KILL_CAMERA_BOUNDS
-    this.laser.bulletSpeed = 1000
-    this.laser.fireRate = 2000
-    this.laser.fireAngle = Phaser.ANGLE_RIGHT
-    this.laser.autofire = true
-    this.antigravity = -8000
-    this.antigravity -= 500
-    this.laser.bulletGravity.y= this.antigravity
-    this.laser.setBulletBodyOffset(28, 10, 6, 6)
-    this.laser.trackSprite(this.hero, 20, 40, false)
-}
+    
+
 
 playstate._spawnground = function(x, y) {
+    
     ground = this.game.add.sprite(x, y, "ground")
     this.game.physics.enable(ground)
     ground.body.allowGravity = false
     ground.body.immovable = true
-    ground.fixedToCamera = true
+    // ground.fixedToCamera = true
 }
 
 playstate._spawnlava = function(x, y) {
@@ -369,7 +376,7 @@ playstate._spawnwalls = function(x, y, side) {
 }
 
 playstate._spawncharacters = function(data) {
-    // spawn hero
+    // ghero
     this.hero = new Hero(this.game, data.hero.x, data.hero.y) // here a new constructor made which is == to this,.hero
     this.game.add.existing(this.hero) // we added the this.hero to Hero
 
@@ -442,7 +449,7 @@ playstate.hervsdoor = function(hero, door) {
 }
 
 window.onload = function() {
-    game = new Phaser.Game(960, 600, Phaser.AUTO, 'game') // created the canvas  with the help of phaser
+    game = new Phaser.Game(960,600, Phaser.AUTO, 'game') // created the canvas  with the help of phaser
     game.state.add("play", playstate)
-    game.state.start("play", true, false, { level: 0})
+    game.state.start("play", true, false, { level: 2})
 }
