@@ -20,11 +20,11 @@ Hero.prototype = Object.create(Phaser.Sprite.prototype)
 Hero.prototype.constructor = Hero // now we can access it any activity like jump and move by this
     // now this method comes in use 
 Hero.prototype.move = function(direction) {
-    const speed = 300  //300 now it will move with physics engine we will handle more things like cllision with physics
+    const speed = 3000  //300 now it will move with physics engine we will handle more things like cllision with physics
     this.body.velocity.x = direction * speed
 }
 Hero.prototype.jump = function() {
-    var jumpspeed = 500 // 500
+    var jumpspeed = 5000 // 500
     jumpspeed+=100
     let canjump = this.body.touching.down
     if (canjump ) {
@@ -185,7 +185,7 @@ playstate._handlecollision = function() {
     }
     if (this.villians.children.length == 0){
         laser.autofire = false
-        
+        console.log("empty")
         
     }
         
@@ -318,7 +318,7 @@ playstate._loadLevel = function(data) {
     data.coins.forEach(this._spawncoin, this)
     data.keys1.forEach(this._spawnkey, this)
 
-    var gravity = 500 // 500
+    var gravity = 3000 // 500
     gravity += 500
     this.game.physics.arcade.gravity.y = gravity // we are doing it here not in init so that if there are levels like moon can have their own gravity in json file
     this._spawncharacters({ hero: data.hero, spiders: data.spiders, villians: data.villians })
@@ -334,12 +334,12 @@ playstate._spawnweapon = function() {
     laser = game.add.weapon(2, "viweapon")
     this.game.physics.enable(laser)
     laser.bulletKillType = Phaser.Weapon.KILL_CAMERA_BOUNDS
-    laser.bulletSpeed = 500
+    laser.bulletSpeed = 3000
     laser.fireRate = 2000
     laser.fireAngle = Phaser.ANGLE_RIGHT
     
     laser.autofire = true
-    this.antigravity = -500 //500
+    this.antigravity = -3000
     this.antigravity -= 500 
     laser.bulletGravity.y= this.antigravity
     laser.setBulletBodyOffset(28, 10, 6, 6)

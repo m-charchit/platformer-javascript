@@ -36,7 +36,16 @@ var cursors
 var door_img
 var hero_img
 
-var tryvillian
+var outlinevillian
+var outlinespider
+var outlinedoor
+var outlinehero
+var platform1
+var platform2
+var platform3
+var platform4
+var platform5
+
 
 var state = {}
 function preload(){
@@ -90,8 +99,19 @@ function create(){
     background.fixedToCamera = true
     ground.fixedToCamera = true
     
-    tryvillian = game.add.sprite(-10,-60,"villian")
-    tryvillian.anchor.set(0.5,0.5)
+    outlinevillian = game.add.sprite(-10,-60,"villian")
+    outlinevillian.anchor.set(0.5,0.5)
+    outlinespider = game.add.sprite(-10,-60,"spider")
+    outlinespider.anchor.set(0.5,0.5)
+    outlinedoor = game.add.sprite(-10,-60,"door")
+    outlinedoor.anchor.set(0.5,0.5)
+    outlinehero = game.add.sprite(-10,-60,"hero")
+    outlinehero.anchor.set(0.5,0.5)
+    platform1 = game.add.sprite(-10,-60,"grass:1x1")
+    platform2 = game.add.sprite(-10,-60,"grass:2x1")
+    platform3 = game.add.sprite(-10,-60,"grass:4x1")
+    platform4 = game.add.sprite(-10,-60,"grass:6x1")
+    platform5 = game.add.sprite(-10,-60,"grass:8x1")
 }
 function spider(){
     villian_add = false
@@ -207,12 +227,95 @@ function update(){
             // console.log(x_pos,y_pos)
     // console.log(x_pos,game.camera.x)
     if (villian_add){
-        tryvillian.x = game.input.x + game.camera.x
-        tryvillian.y = game.input.y 
+        outlinevillian.x = game.input.x + game.camera.x
+        outlinevillian.y = game.input.y 
+    }
+    else{
+        outlinevillian.x = -100
+        outlinevillian.y = -100
+    }
+    if (spider_add){
+        outlinespider.x = game.input.x + game.camera.x
+        outlinespider.y = game.input.y 
+    }
+    else{
+        outlinespider.x = -100
+        outlinespider.y = -100
+    }
+    if (door_add){
+        outlinedoor.x = game.input.x + game.camera.x
+        outlinedoor.y = game.input.y 
+    }
+    else{
+        outlinedoor.x = -100
+        outlinedoor.y = -100
+    }
+    if (hero_add){
+        outlinehero.x = game.input.x + game.camera.x
+        outlinehero.y = game.input.y 
+    }
+    else{
+        outlinehero.x = -100
+        outlinehero.y = -100
     }
 
+    if (platform_add){
+        if (size == 1){
+        platform1.x = game.input.x + game.camera.x
+        platform1.y = game.input.y 
+        }
+        else{
+            platform1.x = -600
+            platform1.y = -300
+        }
+        if (size == 2){
+            platform2.x = game.input.x + game.camera.x
+            platform2.y = game.input.y 
+        }
+        else{
+            platform2.x = -600
+            platform2.y = -300
+        }
+        if (size == 3){
+            platform3.x = game.input.x + game.camera.x
+            platform3.y = game.input.y 
+        }
+        else{
+            platform3.x = -600
+            platform3.y = -300
+        }
+        if (size == 4){
+            platform4.x = game.input.x + game.camera.x
+            platform4.y = game.input.y 
+        }
+        else{
+            platform4.x = -600
+            platform4.y = -300
+        }
+        if (size == 5){
+            platform5.x = game.input.x + game.camera.x
+            platform5.y = game.input.y 
+        }
+        else{
+            platform5.x = -600
+            platform5.y = -300
+        }
+    }
+    else{
+        platform1.x = -600
+        platform1.y = -300
+        platform2.x = -600
+        platform2.y = -300
+        platform3.x = -600
+        platform3.y = -300
+        platform4.x = -600
+        platform4.y = -300
+        platform5.x = -600
+        platform5.y = -300
+    }
 
     if (add_img && count == 1){
+        
     if (platform_add == true ){
     
         
