@@ -35,13 +35,16 @@ var eraser
 var cursors
 var door_img
 var hero_img
+
+var tryvillian
+
 var state = {}
 function preload(){
     game.stage.backgroundColor = "#4488aa"; 
     game.load.image("background", "images/background.png")
     // game.load.json(`level04`, `leveleditortry/level04.json`)}
     try {
-        for (var i=0;i<20;i++){
+        for (var i=0;i<3;i++){
             game.load.json(`level0${i}`, `data/level0${i}.json`)}
             // game.load.json(`level01`, `leveleditortry/level01.json`)
             // // game.load.json(`level03`, `leveleditortry/level03.json`)
@@ -87,6 +90,8 @@ function create(){
     background.fixedToCamera = true
     ground.fixedToCamera = true
     
+    tryvillian = game.add.sprite(-10,-60,"villian")
+    tryvillian.anchor.set(0.5,0.5)
 }
 function spider(){
     villian_add = false
@@ -97,6 +102,7 @@ function spider(){
     coin_add = false
     door_add = false
     hero_add = false
+    
     
 }
 function villian(){
@@ -200,6 +206,12 @@ function update(){
             x_pos = game.camera.x + game.input.mousePointer.x
             // console.log(x_pos,y_pos)
     // console.log(x_pos,game.camera.x)
+    if (villian_add){
+        tryvillian.x = game.input.x + game.camera.x
+        tryvillian.y = game.input.y 
+    }
+
+
     if (add_img && count == 1){
     if (platform_add == true ){
     

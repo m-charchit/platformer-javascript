@@ -20,11 +20,11 @@ Hero.prototype = Object.create(Phaser.Sprite.prototype)
 Hero.prototype.constructor = Hero // now we can access it any activity like jump and move by this
     // now this method comes in use 
 Hero.prototype.move = function(direction) {
-    const speed = 300 // now it will move with physics engine we will handle more things like cllision with physics
+    const speed = 300  //300 now it will move with physics engine we will handle more things like cllision with physics
     this.body.velocity.x = direction * speed
 }
 Hero.prototype.jump = function() {
-    var jumpspeed = 500
+    var jumpspeed = 500 // 500
     jumpspeed+=100
     let canjump = this.body.touching.down
     if (canjump ) {
@@ -104,9 +104,9 @@ Villian.prototype.update = function() {
 }
 Villian.prototype.dies = function() {
     this.body.enable = false
-    this.animations.play("die").onComplete.addOnce(function() {
-        this.kill()
-    }, this)
+    this.destroy()
+    // this.animations.play("die").onComplete.addOnce(function() {
+    // }, this)
 
 }
 
@@ -119,7 +119,7 @@ playstate = {} // we created a game state which objects will be override in futu
 // preload function
 playstate.preload = function() {
     try {
-    for (var i = 0;i<10;i++){
+    for (var i = 0;i<3;i++){
         this.game.load.json(`level:${i}`,`data/level0${i}.json`)
     }   
     } catch (error) {
@@ -160,6 +160,8 @@ playstate.update = function() {
         this.keyIcon.frame = 1
     } else { this.keyIcon.frame = 0 }
     camerax = this.game.camera.x
+    // enemyWeapon.trackSprite(closestEnemy, 0, 0);
+    // enemyWeapon.fire();
 }
 playstate._handlecollision = function() {
     this.game.physics.arcade.collide(this.hero, this.platforms)
@@ -177,6 +179,18 @@ playstate._handlecollision = function() {
     this.game.physics.arcade.overlap(this.hero, door, this.hervsdoor, function(hero, keys) {
         return this.haskey && hero.body.touching.down
     }, this)
+    this.closest_player = this.villians.getClosestTo(this.hero)
+    if (this.closest_player){
+    laser.trackSprite(this.closest_player, 20, 10, true)
+    }
+    if (this.villians.children.length == 0){
+        laser.autofire = false
+        
+        
+    }
+        
+
+
 
 }
 playstate._herovslaser = function(hero, bullet) {
@@ -194,6 +208,9 @@ playstate._herovsvillian = function(hero, villian) {
         villian.dies()
         villidie = true
         laser.autofire = false
+        if (this.closest_player){
+            laser.autofire = true
+        }
         
         
         
@@ -301,7 +318,7 @@ playstate._loadLevel = function(data) {
     data.coins.forEach(this._spawncoin, this)
     data.keys1.forEach(this._spawnkey, this)
 
-    var gravity = 500
+    var gravity = 500 // 500
     gravity += 500
     this.game.physics.arcade.gravity.y = gravity // we are doing it here not in init so that if there are levels like moon can have their own gravity in json file
     this._spawncharacters({ hero: data.hero, spiders: data.spiders, villians: data.villians })
@@ -317,16 +334,16 @@ playstate._spawnweapon = function() {
     laser = game.add.weapon(2, "viweapon")
     this.game.physics.enable(laser)
     laser.bulletKillType = Phaser.Weapon.KILL_CAMERA_BOUNDS
-    laser.bulletSpeed = 300
+    laser.bulletSpeed = 500
     laser.fireRate = 2000
     laser.fireAngle = Phaser.ANGLE_RIGHT
     
     laser.autofire = true
-    this.antigravity = -500
+    this.antigravity = -500 //500
     this.antigravity -= 500 
     laser.bulletGravity.y= this.antigravity
     laser.setBulletBodyOffset(28, 10, 6, 6)
-    laser.trackSprite(villi, 20, 10, true)
+
     laser.multiFire = true
 }
     
