@@ -95,7 +95,7 @@ function create(){
     villian_group = game.add.group()
     coin_group = game.add.group()
     key_group = game.add.group()
-    game.world.setBounds(0, 0, 2000, 600)
+    game.world.setBounds(0, 0, 4500, 600)
     background.fixedToCamera = true
     ground.fixedToCamera = true
     
@@ -203,15 +203,21 @@ data_hero.splice(0,data_hero.length)
 data_door.splice(0,data_door.length)
     }
 var count = 0
+
 function update(){
+
+    size = document.getElementById("size").value
+    size = parseInt(size)
     if (cursors.right.isDown){
         game.camera.x +=70
     }
     else if (cursors.left.isDown){
         game.camera.x -= 70
     }
+
+
     
-    size = document.getElementById("size").value
+    
     if (game.input.activePointer.leftButton.isDown == true){                        
         add_img = true 
         count++
@@ -314,6 +320,7 @@ function update(){
         platform5.y = -300
     }
 
+    
     if (add_img && count == 1){
         
     if (platform_add == true ){
@@ -405,10 +412,8 @@ function update(){
             console.log(data_hero)
             hero_img.anchor.set(0.5,0.5)
         }
-        
+        }
 
-        
-    }
         if (destroy_img){
             eraser.x = game.input.x + game.camera.x
             eraser.y = game.input.y 
@@ -437,47 +442,60 @@ function update(){
             }
 function eraserGrass(keys,grasss){
     // console.log(near)
+    if (add_img){
     index = grass_group.getChildIndex(grasss)
     console.log(index,data[index]);
     data.splice(index,1)
     grasss.destroy()
 }
+}
 function eraserspider(keys,grasss){
     // console.log(near)
+    if (add_img){
     index = spider_group.getChildIndex(grasss)
     console.log(index,data_spider[index]);
     data_spider.splice(index,1)
     grasss.destroy()   
+    }
 }
 function eraservillian(keys,grasss){
     // console.log(near)
+    if (add_img){
     index = villian_group.getChildIndex(grasss)
     console.log(index,data_villian[index]);
     data_villian.splice(index,1)
     grasss.destroy()   
+    }
 }
 function erasercoin(keys,grasss){
     // console.log(near)
+    if (add_img){
     index = coin_group.getChildIndex(grasss)
     console.log(index,data_coin[index]);
     data_coin.splice(index,1)
     grasss.destroy()   
+    }
 }
 function eraserkey(keys,grasss){
     // console.log(near)
+    if (add_img){
     index = key_group.getChildIndex(grasss)
     console.log(index,data_key[index]);
     data_key.splice(index,1)
     grasss.destroy()   
+    }
 }
 function eraserdoor(keys,grasss){
+    if (add_img){
     data_door.pop()
     grasss.destroy()   
+    }
 }
 function eraserhero(keys,grasss){
-    console.log(data_hero)
+    if (add_img){
     data_hero.pop()
     grasss.destroy()   
+    }
 }
 var filename 
 function download(){

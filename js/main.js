@@ -172,10 +172,18 @@ playstate._handlecollision = function() {
     this.game.physics.arcade.overlap(this.hero, this.coins, this._herovscoin, null, this) // null here means no filter apply this or it will not work
     this.game.physics.arcade.collide(this.hero, lava, this._herovslava, null, this) // null here means no filter apply this or it will not work
     this.game.physics.arcade.collide(this.hero, laser.bullets, this._herovslaser, null, this) // null here means no filter apply this or it will not work
-    this.game.physics.arcade.collide(this.villians, laser1.bullets, this._villianvslaser, null, this) // null here means no filter apply this or it will not work
+    try {
+        
+        this.game.physics.arcade.collide(this.villians,laser1.bullets, this._villianvslaser, null, this) // null here means no filter apply this or it will not work
+    } catch (error) {
+        console.log(error)
+        playstate.villians.children.length -= 1
+    }
     this.game.physics.arcade.collide(this.spiders, this.platforms)
     this.game.physics.arcade.collide(this.spiders, this.walls)
     this.game.physics.arcade.collide(this.villians, this.walls)
+    this.game.physics.arcade.collide(this.villians, ground)
+    this.game.physics.arcade.collide(this.spiders, ground)
     this.game.physics.arcade.overlap(this.hero, this.spiders, this._herovsspiders, null, this)
     this.game.physics.arcade.overlap(this.hero, this.villians, this._herovsvillian, null, this)
     this.game.physics.arcade.overlap(this.hero, this.keys1, this.herovskey, null, this)
@@ -240,20 +248,17 @@ playstate._herovsvillian = function(hero, villian) {
         }
         
         
-        
     } else {
         hero.kill()
         trial = 0
     
         this.sfx.stomp.play()
 
-        trial = 0
         this.game.state.restart(true, false, { level: this.level })
     }
 }
 playstate._herovslava = function(hero, lava) {
     hero.kill()
-    trial = 0
     trial = 0
     this.game.state.restart(true, false, { level: this.level })
 }
@@ -322,10 +327,10 @@ playstate.create = function() {
     }
     this._loadLevel(this.game.cache.getJSON(`level:${this.level}`)) // now we took the json with cache.getJSON and added a name _loadlevel to it to be used
     this._createUI()
-    this.game.world.setBounds(0, 0, 2000, 600)
+    this.game.world.setBounds(0, 0, 4500, 600)
     this.game.camera.follow(this.hero)
-    background.fixedToCamera = true
-    ground.fixedToCamera = true
+    // background.fixedToCamera = true
+    // ground.fixedToCamera = true
 
 }
 var background
@@ -334,7 +339,7 @@ playstate._loadLevel = function(data) {
     // creating groups layes for all sprites of same type so that we can set it once only like if collision we will make groups of grass so once we can write collision detection
     this.walls = this.game.add.group()
     background = this.game.add.image(0, 0, "background") // here we used the arbitary key "backgroud" to it which was added above
-
+    background.width = 4500
 
     this.bgdecor = this.game.add.group()
     this.platforms = this.game.add.group() // now all platforms cn be in group
@@ -380,10 +385,10 @@ playstate._spawnweapon = function() {
     laser.multiFire = true
 }
 playstate._spawnHeroWeapon = function() {
-    laser1 = game.add.weapon(4, "viweapon")
+    laser1 = game.add.weapon(10, "viweapon")
     laser1.setBulletBodyOffset(28, 40, 1, 10)
     this.game.physics.enable(laser1)
-    laser1.bulletKillType = Phaser.Weapon.KILL_CAMERA_BOUNDS
+    laser1.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS
     laser1.bulletSpeed = 500
     laser1.fireRate = 600
 
@@ -403,9 +408,11 @@ playstate._spawnHeroWeapon = function() {
 playstate._spawnground = function(x, y) {
     
     ground = this.game.add.sprite(x, y, "ground")
+    ground.width = 4500
     this.game.physics.enable(ground)
     ground.body.allowGravity = false
     ground.body.immovable = true
+
     // ground.fixedToCamera = true
 }
 
@@ -512,6 +519,7 @@ playstate.herovskey = function(hero, key) {
     this.sfx.key.play()
 }
 playstate.hervsdoor = function(hero, door) {
+    // alert("level 1 Completed , click Ok to move to next level")
     this.game.state.restart(true, false, { level: this.level + 1 })
     trial = 0
     this.sfx.door.play()
