@@ -53,7 +53,7 @@ function preload(){
     game.load.image("background", "images/background.png")
     // game.load.json(`level04`, `leveleditortry/level04.json`)}
     try {
-        for (var i=0;i<3;i++){
+        for (var i=0;i<10;i++){
             game.load.json(`level0${i}`, `data/level0${i}.json`)}
             // game.load.json(`level01`, `leveleditortry/level01.json`)
             // // game.load.json(`level03`, `leveleditortry/level03.json`)

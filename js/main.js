@@ -117,15 +117,16 @@ Villian.prototype.dies = function() {
 
 
 playstate = {} // we created a game state which objects will be override in future
-
 // preload function
+playstate.levelcount = 0
 playstate.preload = function() {
     try {
-    for (var i = 0;i<3;i++){
+    for (var i = 0;i<10;i++){
         this.game.load.json(`level:${i}`,`data/level0${i}.json`)
+        this.levelcount++
     }   
     } catch (error) {
-        
+        this.levelcount--
     }
     this.game.load.image("background", "images/background.png") // we have refrence of phaser.game through "this" keyword
         // now before creating sprites we have to load the images
@@ -295,7 +296,7 @@ playstate._handleinput = function() {
     }
 }
 
-const levelcount = 3 // increase it after the change in the number of levels
+// increase it after the change in the number of levels
 playstate.init = function(data) { // HERE WE ADDED THE KEYS WITH INPUT.KEYBOARD.ADDKEYS
     this.game.renderer.renderSession.roundPixels = true // this is so that the image do not blur
     this.keys = this.game.input.keyboard.addKeys({
@@ -312,7 +313,7 @@ playstate.init = function(data) { // HERE WE ADDED THE KEYS WITH INPUT.KEYBOARD.
         }
     }, this)
     this.haskey = false
-    this.level = (data.level || 0) % levelcount
+    this.level = (data.level || 0) % 5
     console.log(data.level)
     console.log(this.level)
 }
@@ -362,7 +363,7 @@ playstate._loadLevel = function(data) {
     this._spawndoor(data.door.x, data.door.y)
     camerax = this.game.camera.x
     this._spawnground(0, 546)
-    this._spawnlava(data.lava.x, data.lava.y)
+    // this._spawnlava(data.lava.x, data.lava.y)
     
     this._spawnweapon()
     this._spawnHeroWeapon()
@@ -416,11 +417,11 @@ playstate._spawnground = function(x, y) {
     // ground.fixedToCamera = true
 }
 
-playstate._spawnlava = function(x, y) {
-    lava = this.game.add.sprite(x, y, "lava")
-    this.game.physics.enable(lava)
-    lava.body.allowGravity = false
-}
+// playstate._spawnlava = function(x, y) {
+//     lava = this.game.add.sprite(x, y, "lava")
+//     this.game.physics.enable(lava)
+//     lava.body.allowGravity = false
+// }
 playstate._spawncoin = function(coin) {
     let sprite = this.coins.create(coin.x, coin.y, "coin")
     sprite.anchor.set(0.5, 0.5)
