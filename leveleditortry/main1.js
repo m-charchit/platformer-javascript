@@ -1,17 +1,9 @@
-  
 game = new Phaser.Game(960, 600, Phaser.AUTO,null,{preload:preload,update:update,create:create})
+var add_sprite
 var a
 var removeall
 var keys
 var counter = 0
-var add_img = false
-var platform_add = false
-var spider_add = false
-var villian_add = false
-var coin_add = false
-var key_add = false
-var door_add = false
-var hero_add = false
 var hero
 var door
 var data = []
@@ -21,31 +13,25 @@ var data_coin = []
 var data_key = []
 var data_hero = []
 var data_door = []
+var data_cannon = []
+var data_lava  = []
+
 var destroy_img= false
 var str
 var x_pos,y_pos
 var size
-var load_level = false
+
 var grass_group
 var spider_group
 var villian_group
 var coin_group
 var key_group
+var lava_group
+var cannon_group
 var eraser
 var cursors
 var door_img
 var hero_img
-
-var outlinevillian
-var outlinespider
-var outlinedoor
-var outlinehero
-var platform1
-var platform2
-var platform3
-var platform4
-var platform5
-
 
 var state = {}
 function preload(){
@@ -55,35 +41,34 @@ function preload(){
     try {
         for (var i=0;i<10;i++){
             game.load.json(`level0${i}`, `data/level0${i}.json`)}
-            // game.load.json(`level01`, `leveleditortry/level01.json`)
-            // // game.load.json(`level03`, `leveleditortry/level03.json`)
-            // game.load.json(`level05`, `data/level01.json`)
-            // game.load.json(`level02`, `data/level02.json`)
-            // game.load.json(`level03`, `data/level03.json`)
-                
     } catch (error) {
         console.log(error);
     }
-    game.load.image("grass:8x1", "images/grass_8x1.png")
-    game.load.image("grass:6x1", "images/grass_6x1.png")
-    game.load.image("grass:4x1", "images/grass_4x1.png")
-    game.load.image("grass:2x1", "images/grass_2x1.png")
-    game.load.image("grass:1x1", "images/grass_1x1.png")
+    game.load.image("platform4", "images/grass_8x1.png")
+    game.load.image("platform3", "images/grass_6x1.png")
+    game.load.image("platform2", "images/grass_4x1.png")
+    game.load.image("platform1", "images/grass_2x1.png")
+    game.load.image("platform0", "images/grass_1x1.png")
     game.load.image("hero", "images/hero_stopped.png")
     game.load.spritesheet("villian", "images/villian.png", 41, 63)
     game.load.spritesheet("coin", "images/coin_animated.png", 22, 22)
     game.load.spritesheet('spider', 'images/spider.png', 42, 32);
     game.load.image("eraser", "images/coin_icon.png")
-    game.load.image("lava", "images/lava.png")
     game.load.spritesheet("door", "images/door.png", 42, 66)
     game.load.spritesheet("key", "images/key.png", 42, 66)
     game.load.image("ground", "images/ground.png")
+    game.load.image("cannon", "images/cannon.png")
+    game.load.image("lava", "images/lava.png")
+    
 
 }
-
+var sprites = ["villian","spider","coin","door","hero","cannon","lava",data_spider,data_cannon,data,data_coin,data_lava,data_villian]
+var platform_grass = ["platform0","platform1","platform2","platform3","platform4"]
 function create(){
     background = game.add.image(0,0,"background")
-    ground = game.add.image(0,546   ,"ground")
+    background.width = 4500
+    background.height =   window.innerHeight + 600
+    ground = game.add.image(0,window.innerHeight- 54   ,"ground")
     background.inputEnabled = true
     ground.inputEnabled = true
     eraser = game.add.sprite(54,65,"eraser")
@@ -94,114 +79,85 @@ function create(){
     spider_group = game.add.group()
     villian_group = game.add.group()
     coin_group = game.add.group()
+    lava_group = game.add.group()
     key_group = game.add.group()
-    game.world.setBounds(0, 0, 4500, 600)
+    cannon_group = game.add.group()
+    game.world.setBounds(0, -600, 4500, 1200)
+
     background.fixedToCamera = true
     ground.fixedToCamera = true
-    
-    outlinevillian = game.add.sprite(-10,-60,"villian")
-    outlinevillian.anchor.set(0.5,0.5)
-    outlinespider = game.add.sprite(-10,-60,"spider")
-    outlinespider.anchor.set(0.5,0.5)
-    outlinedoor = game.add.sprite(-10,-60,"door")
-    outlinedoor.anchor.set(0.5,0.5)
-    outlinehero = game.add.sprite(-10,-60,"hero")
-    outlinehero.anchor.set(0.5,0.5)
-    platform1 = game.add.sprite(-10,-60,"grass:1x1")
-    platform2 = game.add.sprite(-10,-60,"grass:2x1")
-    platform3 = game.add.sprite(-10,-60,"grass:4x1")
-    platform4 = game.add.sprite(-10,-60,"grass:6x1")
-    platform5 = game.add.sprite(-10,-60,"grass:8x1")
+    for (i = 0;i<=6;i++){
+        sprites[i] = game.add.sprite(-10,-60,sprites[i])
+        console.log(sprites[i].key)
+        sprites[i].anchor.set(0.5,0.5)
+        if(sprites[i].key == "cannon"){
+            sprites[i].scale.setTo(0.3,0.25)
+
+        }
+    }
+    for (i = 0;i<=5;i++){
+        platform_grass[i] = game.add.sprite(-10,-60,platform_grass[i])
+        platform_grass[i].anchor.set(0.5,0.5)
 }
-function spider(){
-    villian_add = false
-    spider_add = true
-    platform_add = false
-    destroy_img = false
-    key_add = false
-    coin_add = false
-    door_add = false
-    hero_add = false
-    
-    
-}
-function villian(){
-    villian_add = true
-    spider_add = false
-    platform_add = false
-    destroy_img = false
-    key_add = false
-    coin_add = false
-    door_add = false
-    hero_add = false
-}
-function platform(){
-    platform_add = true
-    villian_add = false
-    spider_add = false
-    destroy_img = false
-    key_add = false
-    coin_add = false
-    door_add = false
-    hero_add = false
-}
-function coin(){
-    key_add = false
-    coin_add = true
-    villian_add = false
-    platform_add = false
-    spider_add = false
-    destroy_img = false
-    door_add = false
-    hero_add = false
-}
-function key(){
-    key_add = true
-    coin_add = false
-    villian_add = false
-    platform_add = false
-    spider_add = false
-    destroy_img = false
-    door_add = false
-    hero_add = false
-}
-function hero_fun(){
-    hero_add = true
-    key_add = false
-    coin_add = false
-    villian_add = false
-    platform_add = false
-    spider_add = false
-    destroy_img = false
-    door_add = false
-}
-function door_fun(){
-    door_add = true
-    key_add = false
-    coin_add = false
-    villian_add = false
-    platform_add = false
-    spider_add = false
-    destroy_img = false
-    hero_add = false
 
 }
+
+
+function shit(name){
+    add_sprite = name
+}
+
+
+
+function villian(){
+    shit("villian")
+}
+function coin(){
+    shit("coin")
+}
+function platform(){
+    shit("platform")
+}
+function spider(){
+    shit("spider")
+}
+function key(){
+    shit("key")
+}
+function hero(){
+    shit("hero")
+}
+function door(){
+    shit("door")
+}
+function cannon(){
+    shit("cannon")
+}
+function lava(){
+    shit("lava")
+}
+
 function destroyall(){
-    grass_group.removeAll()
-    spider_group.removeAll()
-    villian_group.removeAll()
-    coin_group.removeAll()
-    key_group.removeAll()
-    door_img.destroy()
-    hero_img.destroy()
-    data_spider.splice(0,data_spider.length)
-data_villian.splice(0,data_villian.length)
-data.splice(0,data.length)
-data_coin.splice(0,data_coin.length)
-data_key.splice(0,data_key.length)
-data_hero.splice(0,data_hero.length)
-data_door.splice(0,data_door.length)
-    }
+
+        lava_group.removeAll()
+        grass_group.removeAll()
+        spider_group.removeAll()
+        villian_group.removeAll()
+        coin_group.removeAll()
+        key_group.removeAll()
+        cannon_group.removeAll()
+        door_img.destroy()
+        hero_img.destroy()
+        data_spider.splice(0,data_spider.length)
+        data_villian.splice(0,data_villian.length)
+        data.splice(0,data.length)
+        data_coin.splice(0,data_coin.length)
+        data_cannon.splice(0,data_cannon.length)
+        data_key.splice(0,data_key.length)
+        data_hero.splice(0,data_hero.length)
+        data_door.splice(0,data_door.length)
+
+}
 var count = 0
 
 function update(){
@@ -213,6 +169,12 @@ function update(){
     }
     else if (cursors.left.isDown){
         game.camera.x -= 70
+    }
+    if (cursors.down.isDown){
+        game.camera.y +=20
+    }
+    else if (cursors.up.isDown){
+        game.camera.y -= 20
     }
 
 
@@ -226,220 +188,116 @@ function update(){
         add_img = false
         count = 0
     }
-    // if (game.input.activePointer.leftButton.isDown == false){                        
-            //         add_img = false}
-            y_pos = game.input.mousePointer.y    
+
+            y_pos = game.input.mousePointer.y + game.camera.y 
             x_pos = game.camera.x + game.input.mousePointer.x
-            // console.log(x_pos,y_pos)
-    // console.log(x_pos,game.camera.x)
-    if (villian_add){
-        outlinevillian.x = game.input.x + game.camera.x
-        outlinevillian.y = game.input.y 
-    }
-    else{
-        outlinevillian.x = -100
-        outlinevillian.y = -100
-    }
-    if (spider_add){
-        outlinespider.x = game.input.x + game.camera.x
-        outlinespider.y = game.input.y 
-    }
-    else{
-        outlinespider.x = -100
-        outlinespider.y = -100
-    }
-    if (door_add){
-        outlinedoor.x = game.input.x + game.camera.x
-        outlinedoor.y = game.input.y 
-    }
-    else{
-        outlinedoor.x = -100
-        outlinedoor.y = -100
-    }
-    if (hero_add){
-        outlinehero.x = game.input.x + game.camera.x
-        outlinehero.y = game.input.y 
-    }
-    else{
-        outlinehero.x = -100
-        outlinehero.y = -100
-    }
 
-    if (platform_add){
-        if (size == 1){
-        platform1.x = game.input.x + game.camera.x
-        platform1.y = game.input.y 
+        for (i=0;i<=6;i++){
+            if (add_sprite ==sprites[i].key){
+                sprites[i].x = game.input.x + game.camera.x
+                sprites[i].y = game.input.y + game.camera.y
+            }
+            else{
+                sprites[i].x = -100
+                sprites[i].y = -100
+            }
         }
-        else{
-            platform1.x = -600
-            platform1.y = -300
-        }
-        if (size == 2){
-            platform2.x = game.input.x + game.camera.x
-            platform2.y = game.input.y 
-        }
-        else{
-            platform2.x = -600
-            platform2.y = -300
-        }
-        if (size == 3){
-            platform3.x = game.input.x + game.camera.x
-            platform3.y = game.input.y 
-        }
-        else{
-            platform3.x = -600
-            platform3.y = -300
-        }
-        if (size == 4){
-            platform4.x = game.input.x + game.camera.x
-            platform4.y = game.input.y 
-        }
-        else{
-            platform4.x = -600
-            platform4.y = -300
-        }
-        if (size == 5){
-            platform5.x = game.input.x + game.camera.x
-            platform5.y = game.input.y 
-        }
-        else{
-            platform5.x = -600
-            platform5.y = -300
+
+
+        for (i=0;i<=5;i++){
+    if (add_sprite == "platform"){
+            if (size == i){
+                platform_grass[i].x = game.input.x + game.camera.x
+                platform_grass[i].y = game.input.y + game.camera.y 
+                }
+            else{
+                platform_grass[i].x = -600
+                platform_grass[i].y = -600               
         }
     }
     else{
-        platform1.x = -600
-        platform1.y = -300
-        platform2.x = -600
-        platform2.y = -300
-        platform3.x = -600
-        platform3.y = -300
-        platform4.x = -600
-        platform4.y = -300
-        platform5.x = -600
-        platform5.y = -300
+        platform_grass[i].x = -600
+        platform_grass[i].y = -300
     }
-
+}
     
     if (add_img && count == 1){
         
-    if (platform_add == true ){
-    
-        
-        if(size== 1){
-            grass1 = game.add.sprite(x_pos,y_pos,"grass:1x1")    
-            grass_group.add(grass1)      
-            world_data = {"image": "grass:1x1", "x": x_pos, "y": y_pos}
-            data.push(world_data)
-            game.physics.enable(grass1)
-        }
-        else if(size== 2){
-            grass2 = game.add.sprite(x_pos,y_pos,"grass:2x1")    
-            grass_group.add(grass2)      
-            world_data = {"image": "grass:2x1", "x": x_pos, "y": y_pos}
-            data.push(world_data)
-            game.physics.enable(grass2)
-        }
-        else if(size== 3){
-            grass3 = game.add.sprite(x_pos,y_pos,"grass:4x1")    
-            grass_group.add(grass3)      
-            world_data = {"image": "grass:4x1", "x": x_pos, "y": y_pos}
-            data.push(world_data)
-            game.physics.enable(grass3)
-        }
-            else if(size== 4){
-            grass4 = game.add.sprite(x_pos,y_pos,"grass:6x1")    
-            grass_group.add(grass4)      
-            world_data = {"image": "grass:6x1", "x": x_pos, "y": y_pos}
-            data.push(world_data)
-            game.physics.enable(grass4)
-           
-        }
-        else if(size== 5){
-            grass5 = game.add.sprite(x_pos,y_pos,"grass:8x1")    
-            grass_group.add(grass5)      
-            world_data = {"image": "grass:8x1", "x": x_pos, "y": y_pos}
-            data.push(world_data)
-            game.physics.enable(grass5)
-           
+    if (add_sprite == "platform" ){
+        for (i=0;i<=5;i++){
+            if (size == i){
+               shit2(platform_grass[i].key,data,grass_group)
+            }
         }
     }
-        if (spider_add){
-            spider_img = game.add.sprite(x_pos,y_pos,"spider")          
-            spider_group.add(spider_img)
-            world_data = {"x": x_pos, "y": y_pos}
-            data_spider.push(world_data)
-            spider_img.anchor.set(0.5)
-            game.physics.enable(spider_img)
-        }
-        if (villian_add ){
-            villian_img = game.add.sprite(x_pos,y_pos,"villian")
-            villian_group.add(villian_img)
-            world_data = {"x": x_pos, "y": y_pos}
-            data_villian.push(world_data)
-            game.physics.enable(villian_img)
-            villian_img.anchor.set(.5,.5)
-        }
-        if (coin_add ){
-            coin_img = game.add.sprite(x_pos,y_pos,"coin")
-            coin_group.add(coin_img)
-            world_data = {"x": x_pos, "y": y_pos}
-            data_coin.push(world_data)
-            game.physics.enable(coin_img)
-            coin_img.anchor.set(0.5,0.5)
-        }
-        if (key_add ){
-            key_img = game.add.sprite(x_pos,y_pos,"key")
-            key_group.add(key_img)
-            world_data = {"x": x_pos, "y": y_pos}
-            data_key.push(world_data)
-            game.physics.enable(key_img)
-            key_img.anchor.set(0.5,0.5)
-        }
-        if (door_add ){
-            door_img = game.add.sprite(x_pos,y_pos,"door")
-            world_data = {"x": x_pos, "y": y_pos}
-            data_door.push(world_data)
-            game.physics.enable(door_img)
-            console.log(data_door);
-            door_img.anchor.set(0.5,0.5)
-        }
-        if (hero_add ){
-            hero_img = game.add.sprite(x_pos,y_pos,"hero")
-            world_data = {"x": x_pos, "y": y_pos}
-            data_hero.push(world_data)
-            game.physics.enable(hero_img)
-            console.log(data_hero)
-            hero_img.anchor.set(0.5,0.5)
-        }
-        }
 
-        if (destroy_img){
+        if (add_sprite == "spider"){
+            shit2("spider",data_spider,spider_group)
+        }
+        if (add_sprite == "villian" ){
+        shit2("villian",data_villian,villian_group)
+        }
+        if (add_sprite == "coin"){
+        shit2("coin",data_coin,coin_group)
+        }
+        if (add_sprite == "key"){
+        shit2("key",data_key,key_group)
+        }
+        if (add_sprite == "lava"){
+        shit2("lava",data_lava,lava_group)
+        }
+        if (add_sprite == "cannon"){
+        cannon_img  = shit2("cannon",data_cannon,cannon_group)
+        cannon_img.scale.setTo(0.3,0.25)
+        }
+        if (add_sprite == "door"){
+        door_img = shit2("door",data_door,null)
+        }
+        if (add_sprite == "hero" ){
+            hero_img = shit2("hero",data_hero,null)    
+        }
+        }
+        
+        function shit2(name,sprite_pos,group){
+            console.log(sprite_pos)
+            name = game.add.sprite(x_pos,y_pos,name)    
+            if (group != null){
+                group.add(name)
+            }
+         if (group != grass_group){
+            world_data = {"x": x_pos, "y": y_pos}
+        }
+        else{
+            world_data = {"image":name.key,"x": x_pos, "y": y_pos}
+
+        }
+        
+            sprite_pos.push(world_data)
+            console.log(sprite_pos)
+            game.physics.enable(name)
+            name.anchor.set(0.5,0.5)
+            return name
+        }
+        if (add_sprite == "destroy"){
             eraser.x = game.input.x + game.camera.x
-            eraser.y = game.input.y 
-            spider_add = false
-            villian_add = false
-            coin_add = false
-            platform_add = false
-            hero_add = false
-            door_add = false
-            key_add = false
-            
-          
+            eraser.y = game.input.y + game.camera.y 
+  
                     game.physics.arcade.collide(eraser,grass_group,eraserGrass,null,this)
+                    game.physics.arcade.collide(eraser,lava_group,eraserlava,null,this)
                     game.physics.arcade.collide(eraser,spider_group,eraserspider,null,this)
                     game.physics.arcade.collide(eraser,villian_group,eraservillian,null,this)
                     game.physics.arcade.collide(eraser,coin_group,erasercoin,null,this)
+                    game.physics.arcade.collide(eraser,cannon_group,erasercannon,null,this)
                     game.physics.arcade.collide(eraser,key_group,eraserkey,null,this)
                     game.physics.arcade.collide(eraser,door_img,eraserdoor,null,this)
                     game.physics.arcade.collide(eraser,hero_img,eraserhero,null,this)
                 }
-    if (removeall){
-        
-    }
+
                 
                 
             }
+
+
 function eraserGrass(keys,grasss){
     // console.log(near)
     if (add_img){
@@ -456,13 +314,28 @@ function eraserspider(keys,grasss){
     console.log(index,data_spider[index]);
     data_spider.splice(index,1)
     grasss.destroy()   
+    }}
+function eraserlava(keys,grasss){
+    // console.log(near)
+    if (add_img){
+    index = lava_group.getChildIndex(grasss)
+    console.log(index,data_lava[index]);
+    data_lava.splice(index,1)
+    grasss.destroy()   
+    }}
+function erasercannon(keys,grasss){
+    // console.log(near)
+    if (add_img){
+    index = cannon_group.getChildIndex(grasss)
+    console.log(index,data_cannon[index]);
+    data_cannon.splice(index,1)
+    grasss.destroy()   
     }
 }
 function eraservillian(keys,grasss){
     // console.log(near)
     if (add_img){
     index = villian_group.getChildIndex(grasss)
-    console.log(index,data_villian[index]);
     data_villian.splice(index,1)
     grasss.destroy()   
     }
@@ -500,8 +373,14 @@ function eraserhero(keys,grasss){
 var filename 
 function download(){
     var elm = document.createElement("a")
+    for (i = 7 ;i<=sprites.length - 1;i++){
+        if (sprites[i].length == 0)
+{        sprites[i].push({"x":-10,"y":10010101})
+}
+        
+    }
     
-    elm.setAttribute("href","data:text/plaon;charset=utf-8," +"{" +"\"platforms\" :"+ JSON.stringify(data) +", \"spiders\" :"+ JSON.stringify(data_spider) + ", \"villians\" :"+JSON.stringify(data_villian) +", \"coins\" :"+JSON.stringify(data_coin)+", \"keys1\" :"+JSON.stringify(data_key) +", \"door\" :"+JSON.stringify(data_door[0]) + ", \"hero\" :"+JSON.stringify(data_hero[0]) + ", \"lava\" : {\"x\" :10000, \"y\" :10000}" + "}")
+    elm.setAttribute("href","data:text/plaon;charset=utf-8," +"{" +"\"platforms\" :"+ JSON.stringify(data) +", \"spiders\" :"+ JSON.stringify(data_spider) + ", \"villians\" :"+JSON.stringify(data_villian) +", \"coins\" :"+JSON.stringify(data_coin)+", \"keys1\" :"+JSON.stringify(data_key) +", \"cannon\" :"+JSON.stringify(data_cannon) +", \"door\" :"+JSON.stringify(data_door[0]) + ", \"hero\" :"+JSON.stringify(data_hero[0]) + ", \"lava\" :" +JSON.stringify(data_lava)  + "}")
 
     
 
@@ -511,9 +390,10 @@ function download(){
     elm.click()
     
 }
+
 function load(){
     // a = game.cache.getJSON(`level:${this.level}`)
-    load_level = true
+add_sprite == "platform"
     level  = document.getElementById("input").value
     filename =  `level0${level}`
     p = document.getElementById("p")
@@ -521,6 +401,8 @@ function load(){
     console.log(filename);
     try {
         a = game.cache.getJSON(filename)
+            
+        
     // alert(JSON.stringify(a.platforms)) // now all platforms cn be in group
     for(i = 0;i<a.platforms.length;i++){
     data.push(a.platforms[i])
@@ -546,6 +428,14 @@ function load(){
     data_key.push(a.keys1[i])
 }
     a.keys1.forEach(this._spawnkey, this)
+    for(i = 0;i<a.cannon.length;i++){
+    data_cannon.push(a.cannon[i])
+}
+    a.cannon.forEach(this._spawncannon, this)
+    for(i = 0;i<a.lava.length;i++){
+    data_lava.push(a.lava[i])
+}
+    a.lava.forEach(this._spawnlava, this)
 
     data_hero.push(a.hero)
 
@@ -561,54 +451,56 @@ function load(){
     spawndoor()
     spawnhero()
 }
+
+function draw(sprite,group,name = null){
+    console.log(sprite)
+    if (name == null){
+    img = game.add.sprite(sprite.x, sprite.y, sprite.image)
+}else{
+    img = game.add.sprite(sprite.x,sprite.y,name)
+}
+    game.physics.enable(img )
+    if (group != null){
+    group.add(img )
+}
+    img.anchor.set(0.5,0.5)
+    return img
+}
 function _spawnplatform(platform){
-    let sprite = game.add.sprite(platform.x, platform.y, platform.image) 
-    game.physics.enable(sprite)
-    grass_group.add(sprite)
-    
+    draw(platform,grass_group) 
 }
 function _spawnspider(spider){
-    let sprite =  game.add.sprite(spider.x, spider.y , "spider") 
-    game.physics.enable(sprite)
-    spider_group.add(sprite)
-    sprite.anchor.set(0.5)
+    draw(spider,spider_group,"spider")
 }
 
 function _spawnvillian(villian){
-    let sprite =  game.add.sprite(villian.x, villian.y , "villian") 
-    game.physics.enable(sprite)
-    villian_group.add(sprite)
-    sprite.anchor.set(.5,.5)
+    draw(villian,villian_group,"villian")
     
 }
+function _spawnlava(lava){
+    draw(lava,lava_group,"lava")   
+}
 function _spawncoin(coin){
-    let sprite =  game.add.sprite(coin.x, coin.y , "coin") 
-    game.physics.enable(sprite)
-    coin_group.add(sprite)
-    sprite.anchor.set(0.5,0.5)
+draw(coin,coin_group,"coin")
     
 }
 function _spawnkey(key){
-    let sprite =  game.add.sprite(key.x, key.y , "key") 
-    game.physics.enable(sprite)
-    key_group.add(sprite)
-    sprite.anchor.set(0.5)
+draw(key,key_group,"key")
+    
+}
+function _spawncannon(cannon){
+cannon = draw(cannon,cannon_group,"cannon")
+cannon.scale.setTo(0.3,0.25)
+    cannon.anchor.setTo(.5,.5)
     
 }
 
 function spawndoor(){
-    door_img=  game.add.sprite(a.door.x,a.door.y, "door") 
-    game.physics.enable(door_img)    
-    door_img.anchor.set(0,0.5)
+door_img = draw(a.door,null,"door")
 }
 function spawnhero(){
-    hero_img =  game.add.sprite(a.hero.x, a.hero.y , "hero") 
-    game.physics.enable(hero_img)    
-    hero_img.anchor.set(0.5,0.5)
+    hero_img = draw(a.hero,null,"hero")
 }
 function destroy(){   
-    destroy_img = true
-    // spider_add = false
-
-        
+    shit("destroy")
 }

@@ -8,26 +8,36 @@
 
 
     <style>
+        body {    
+            margin: 0 !important;
+            padding: 0 !important;
+        }
         canvas {
             margin: 0 auto;
+            height: 100vh;
+            width:100vh;
         }
     </style>
 </head>
 <body>
     <p id="p"></p>
 
-    <input type="text" id="input" placeholder="level_No">
-    <input type="text" id="size" placeholder="platformsize 1,2,3,4,5">
+    <input type="text" id="input" placeholder="level_No" style="
+    width: 71px;
+">
+    <input type="text" id="size" placeholder="platformsize 0,1,2,3,4">
     <button onclick="destroy()">destroy</button>
     <button onclick="download()">download</button>
     <button onclick="load()">load</button>
     <button onclick="spider()">spider</button>
     <button onclick="platform()">platform</button>
     <button onclick="villian()">villian</button>
+    <button onclick="lava()">lava</button>
+    <button onclick="cannon()">cannon</button>
     <button onclick="coin()">coin</button>
     <button onclick="key()">key</button>
-    <button onclick="door_fun()">door</button>
-    <button onclick="hero_fun()">hero</button>
+    <button onclick="door()">door</button>
+    <button onclick="hero()">hero</button>
     <button onclick="destroyall()">clearall</button>
 
 </body>
