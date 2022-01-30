@@ -180,7 +180,7 @@ playstate = {} // we created a game state which objects will be override in futu
 playstate.levelcount = 0
 playstate.preload = function() {
     try {
-    for (var i = 0;i<10;i++){
+    for (var i = 0;i<1;i++){
         this.game.load.json(`level:${i}`,`data/level0${i}.json`)
         this.levelcount++
     }   
@@ -331,7 +331,7 @@ playstate.init = function(data) { // HERE WE ADDED THE KEYS WITH INPUT.KEYBOARD.
         }
     }, this)
     this.haskey = false
-    this.level = (data.level || 0) % 5
+    this.level = (data.level || 0) % 1
 
 }
      
@@ -352,7 +352,7 @@ playstate.create = function() {
     }
     this._loadLevel(this.world_data) // now we took the json with cache.getJSON and added a name _loadlevel to it to be used
     this._createUI()
-    this.game.world.setBounds(0, -600, 4500, window.innerHeight * window.devicePixelRatio + 600)
+    this.game.world.setBounds(0, -600, 4500, 1200)
     this.game.camera.follow(this.hero)
     // background.fixedToCamera = true
     // ground.fixedToCamera = true
@@ -392,7 +392,7 @@ playstate._loadLevel = function(data) {
     this._spawncharacters({ hero: data.hero, spiders: data.spiders, villians: data.villians ,cannon : data.cannon})
     this._spawndoor(data.door.x , data.door.y)
     camerax = this.game.camera.x
-    this._spawnground(0, window.innerHeight * window.devicePixelRatio- 54)
+    this._spawnground(0, 546)
     data.lava.forEach(this._spawnlava,this)
     
     this._spawnweapon()
@@ -422,7 +422,10 @@ playstate._createUI = function() {
     this.hud.add(this.keyIcon)
     // this.coinicon.fixedToCamera =+ true
     this.hud.fixedToCamera = true
-
+    let style = {fill:"white",backgroundColor: "black"}
+    this.levelViewer = this.game.add.text(900, 20, `level: ${this.level}`, style)
+    this.levelViewer.anchor.set(0.5,0.5)
+    this.levelViewer.fixedToCamera = true
 }
 
 
@@ -642,9 +645,9 @@ this.coinspickup++
 
 
 window.onload = function() {
-    game = new Phaser.Game(window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio, Phaser.AUTO, 'game') // created the canvas  with the help of phaser
+    game = new Phaser.Game(960,600, Phaser.AUTO, 'game') // created the canvas  with the help of phaser
     game.state.add("play", playstate)
-    game.state.start("play", true, false, { level: 1})
+    game.state.start("play", true, false, { level: 0})
     
 }
 

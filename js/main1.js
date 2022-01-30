@@ -68,7 +68,7 @@ function create(){
     background = game.add.image(0,0,"background")
     background.width = 4500
     background.height =   window.innerHeight + 600
-    ground = game.add.image(0,window.innerHeight- 54   ,"ground")
+    ground = game.add.image(0,546   ,"ground")
     background.inputEnabled = true
     ground.inputEnabled = true
     eraser = game.add.sprite(54,65,"eraser")
